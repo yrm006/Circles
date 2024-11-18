@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<math.h>
 
 typedef struct circle
 {
@@ -50,6 +51,16 @@ void circle_mouse(circle* c){
     c->y += (mouseY - c->y) * 0.1;
 }
 
+bool circle_col(circle* c1, circle* c2){
+    int dx = c1->x - c2->x;
+    int dy = c1->y - c2->y;
+    int distance = sqrt(dx * dx + dy * dy);
+
+    if (distance < c1->radius + c2->radius){
+        return true;
+    }
+}
+
 circle player;
 
 const int MAX_ENEMIES = 10;
@@ -78,10 +89,21 @@ void init_enemies() {
         }
 
         int s = GetRandomValue(1, 3);
-        int r = GetRandomValue(1, 20);
+        int r = GetRandomValue(5, 30);
 
         circle_init(&enemies[i], x, y, GetRandomValue(-5, 5), GetRandomValue(-5, 5), s, r, BLUE);
     }
+}
+
+void circle_powerup(circle* c, circle* p){
+    c->radius += p->radius / 4;
+}
+
+void circle_disappear(circle* c){
+    c->x = -100;
+    c->y = -100;
+    c->xv = 0;
+    c->yv = 0;
 }
 
 int main(){
@@ -89,6 +111,10 @@ int main(){
     const int screenHeight = 450;
 
     bool start = false;
+    bool gameclear = false;
+
+    int heratime = 0;
+    int cleartime = 0;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     srand(time(NULL));
@@ -102,18 +128,44 @@ int main(){
         if (start){
             circle_mouse(&player);
         }
-        if (IsKeyPressed(KEY_SPACE)){
+        if (!start && IsKeyPressed(KEY_SPACE)){
+            init_enemies();
             start = true;
+            heratime = GetTime();
         }
         BeginDrawing();
             ClearBackground(RAYWHITE);
 
             circle_draw(&player);
+            if (gameclear){
+                DrawText("Game Clear", 300, 200, 20, BLACK);
+                DrawText("Congratulations!", 300, 180, 20, BLACK);
+                DrawText(TextFormat("Clear Time: %d seconds", cleartime), 300, 220, 20, BLACK);
+            }else
             if (start){
                 int i = -1;
+                int count = 0;
                 while(++i < MAX_ENEMIES){
                     circle_draw(&enemies[i]);
                     circle_move(&enemies[i]);
+
+                    if (circle_col(&player, &enemies[i])){
+                        if (player.radius < enemies[i].radius){
+                            start = false;
+                        }else{
+                            circle_disappear(&enemies[i]);
+                            circle_powerup(&player, &enemies[i]);
+                        }
+                    }
+
+                    if (enemies[i].x == -100 && enemies[i].y == -100){
+                        count++;
+                    }
+                }
+                if (count == MAX_ENEMIES){
+                    start = false;
+                    gameclear = true;
+                    cleartime = GetTime() - heratime;
                 }
             }else{
                 DrawText("Press SPACE to start", 300, 200, 20, BLACK);
