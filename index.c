@@ -71,6 +71,8 @@ void player_init(){
 
 const int MAX_ENEMIES = 14;
 circle enemies[MAX_ENEMIES];
+Color colors[5] = {BLUE, GREEN,PURPLE, DARKBLUE, VIOLET};
+
 void init_enemies() {
     int i = -1;
     while(++i < MAX_ENEMIES){
@@ -101,7 +103,7 @@ void init_enemies() {
             yv = GetRandomValue(-5, 5);
         }
         int r = GetRandomValue(3, 30);
-        circle_init(&enemies[i], x, y, xv,yv, r, BLUE);
+        circle_init(&enemies[i], x, y, xv,yv, r, colors[GetRandomValue(0, 4)]);
     }
 }
 
@@ -123,7 +125,7 @@ int main(){
     int heratime = 0;
     int cleartime = 0;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "Circle Game");
     srand(time(NULL));
     player_init();
     
