@@ -1,4 +1,7 @@
 #include<raylib.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
 
 typedef struct circle
 {
@@ -21,6 +24,8 @@ void circle_init(circle* c, int x, int y, int xv, int yv,int speed,int radius, C
     c->speed = speed;
     c->radius = radius;
     c->color = color;
+
+    printf("circle x: %d y: %d xv: %d yv: %d speed: %d radius: %d\n", c->x, c->y, c->xv, c->yv, c->speed, c->radius);
 }
 void circle_draw(circle* c){
     DrawCircle(c->x, c->y, c->radius, c->color);
@@ -28,31 +33,91 @@ void circle_draw(circle* c){
 void circle_move(circle* c){
     c->x += c->xv;
     c->y += c->yv;
+
+    if (c->x < 0 || c->x > 800){
+        c->xv *= -1;
+    }
+    if (c->y < 0 || c->y > 450){
+        c->yv *= -1;
+    }
+
 }
 void circle_mouse(circle* c){
-    c->x = GetMouseX();
-    c->y = GetMouseY();
+    int mouseX = GetMouseX();
+    int mouseY = GetMouseY();
+
+    c->x += (mouseX - c->x) * 0.1;
+    c->y += (mouseY - c->y) * 0.1;
 }
 
 circle player;
+
+const int MAX_ENEMIES = 10;
+circle enemies[MAX_ENEMIES];
+void init_enemies() {
+    int i = -1;
+    while(++i < MAX_ENEMIES){
+        int p = GetRandomValue(0, 3);
+        int x,y;
+        
+        if(p == 0){
+            x = GetRandomValue(0, 800);
+            y = GetRandomValue(0, 1) * 450;
+        }else
+        if (p == 1){
+            x = GetRandomValue(0, 1) * 800;
+            y = GetRandomValue(0, 450);
+        }else
+        if (p == 2){
+            x = GetRandomValue(0, 800);
+            y = 0;
+        }else
+        if (p == 3){
+            x = 800;
+            y = GetRandomValue(0, 450);
+        }
+
+        int s = GetRandomValue(1, 3);
+        int r = GetRandomValue(1, 20);
+
+        circle_init(&enemies[i], x, y, GetRandomValue(-5, 5), GetRandomValue(-5, 5), s, r, BLUE);
+    }
+}
 
 int main(){
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    circle_init(&player, 400, 225, 0, 0,3, 10, RED);
+    bool start = false;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    srand(time(NULL));
+
+    circle_init(&player, 400, 225, 0, 0,3, 15, RED);
+    init_enemies();
     
     SetTargetFPS(60);
 
     while (!WindowShouldClose()){
+        if (start){
+            circle_mouse(&player);
+        }
+        if (IsKeyPressed(KEY_SPACE)){
+            start = true;
+        }
         BeginDrawing();
+            ClearBackground(RAYWHITE);
 
-        circle_mouse(&player);
-
-        ClearBackground(RAYWHITE);
-        circle_draw(&player);
+            circle_draw(&player);
+            if (start){
+                int i = -1;
+                while(++i < MAX_ENEMIES){
+                    circle_draw(&enemies[i]);
+                    circle_move(&enemies[i]);
+                }
+            }else{
+                DrawText("Press SPACE to start", 300, 200, 20, BLACK);
+            }
         EndDrawing();
     }
     return 0;
