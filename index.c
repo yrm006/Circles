@@ -73,7 +73,19 @@ const int MAX_ENEMIES = 14;
 circle enemies[MAX_ENEMIES];
 Color colors[5] = {BLUE, GREEN,PURPLE, DARKBLUE, VIOLET};
 
+int rs[MAX_ENEMIES];
+
 void init_enemies() {
+    {
+        int i = MAX_ENEMIES;
+        while(--i >= MAX_ENEMIES / 3){
+            rs[i] = GetRandomValue(5, 15);
+        }
+        while(--i >= 0){
+            rs[i] = GetRandomValue(15, 30);
+        }
+    }
+
     int i = -1;
     while(++i < MAX_ENEMIES){
         int p = GetRandomValue(0, 3);
@@ -103,7 +115,7 @@ void init_enemies() {
             yv = GetRandomValue(-5, 5);
         }
         int r = GetRandomValue(3, 30);
-        circle_init(&enemies[i], x, y, xv,yv, r, colors[GetRandomValue(0, 4)]);
+        circle_init(&enemies[i], x, y, xv,yv, rs[i], colors[GetRandomValue(0, 4)]);
     }
 }
 
