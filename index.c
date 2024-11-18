@@ -4,6 +4,9 @@
 #include<time.h>
 #include<math.h>
 
+const int screenWidth = 1000;
+const int screenHeight = 600;
+
 typedef struct circle
 {
     int x;
@@ -17,12 +20,11 @@ typedef struct circle
     Color color;
 } circle;
 
-void circle_init(circle* c, int x, int y, int xv, int yv,int speed,int radius, Color color){
+void circle_init(circle* c, int x, int y, int xv, int yv,int radius, Color color){
     c->x = x;
     c->y = y;
     c->xv = xv;
     c->yv = yv;
-    c->speed = speed;
     c->radius = radius;
     c->color = color;
 
@@ -35,10 +37,10 @@ void circle_move(circle* c){
     c->x += c->xv;
     c->y += c->yv;
 
-    if (c->x < 0 || c->x > 800){
+    if (c->x < 0 || c->x > screenWidth){
         c->xv *= -1;
     }
-    if (c->y < 0 || c->y > 450){
+    if (c->y < 0 || c->y > screenHeight){
         c->yv *= -1;
     }
 
@@ -59,6 +61,7 @@ bool circle_col(circle* c1, circle* c2){
     if (distance < c1->radius + c2->radius){
         return true;
     }
+    return false;
 }
 
 circle player;
@@ -70,28 +73,32 @@ void init_enemies() {
     while(++i < MAX_ENEMIES){
         int p = GetRandomValue(0, 3);
         int x,y;
-        
+        int xv = 0;
+        int yv = 0;
+
         if(p == 0){
-            x = GetRandomValue(0, 800);
-            y = GetRandomValue(0, 1) * 450;
+            x = GetRandomValue(0, screenWidth);
+            y = GetRandomValue(0, 1) * screenHeight;
         }else
         if (p == 1){
-            x = GetRandomValue(0, 1) * 800;
-            y = GetRandomValue(0, 450);
+            x = GetRandomValue(0, 1) * screenWidth;
+            y = GetRandomValue(0, screenHeight);
         }else
         if (p == 2){
-            x = GetRandomValue(0, 800);
+            x = GetRandomValue(0, screenWidth);
             y = 0;
         }else
         if (p == 3){
-            x = 800;
-            y = GetRandomValue(0, 450);
+            x = screenWidth;
+            y = GetRandomValue(0, screenHeight);
         }
 
-        int s = GetRandomValue(1, 3);
+        while (xv == 0 && yv == 0){
+            xv = GetRandomValue(-5, 5);
+            yv = GetRandomValue(-5, 5);
+        }
         int r = GetRandomValue(3, 30);
-
-        circle_init(&enemies[i], x, y, GetRandomValue(-5, 5), GetRandomValue(-5, 5), s, r, BLUE);
+        circle_init(&enemies[i], x, y, xv,yv, r, BLUE);
     }
 }
 
@@ -107,9 +114,6 @@ void circle_disappear(circle* c){
 }
 
 int main(){
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
     bool start = false;
     bool gameclear = false;
 
@@ -119,7 +123,7 @@ int main(){
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     srand(time(NULL));
 
-    circle_init(&player, 400, 225, 0, 0,3, 15, RED);
+    circle_init(&player, screenWidth / 2, screenHeight / 2, 0, 0, 15, RED);
     init_enemies();
     
     SetTargetFPS(60);
@@ -138,9 +142,9 @@ int main(){
 
             circle_draw(&player);
             if (gameclear){
-                DrawText("Game Clear", 300, 200, 20, BLACK);
-                DrawText("Congratulations!", 300, 180, 20, BLACK);
-                DrawText(TextFormat("Clear Time: %d seconds", cleartime), 300, 220, 20, BLACK);
+                DrawText("Game Clear", 250, 200, 50, BLACK);
+                DrawText("Congratulations!", 250, 250, 50, BLACK);
+                DrawText(TextFormat("Clear Time: %d seconds", cleartime), 250, 300, 50, BLACK);
             }else
             if (start){
                 int i = -1;
@@ -168,7 +172,7 @@ int main(){
                     cleartime = GetTime() - heratime;
                 }
             }else{
-                DrawText("Press SPACE to start", 300, 200, 20, BLACK);
+                DrawText("Press SPACE to start", screenWidth / 2 - MeasureText("Press SPACE to start", 50) / 2, screenHeight / 2, 50, BLACK);
             }
         EndDrawing();
     }
