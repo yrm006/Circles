@@ -65,6 +65,9 @@ bool circle_col(circle* c1, circle* c2){
 }
 
 circle player;
+void player_init(){
+    circle_init(&player, screenWidth / 2, screenHeight / 2, 0, 0, 12, RED);
+}
 
 const int MAX_ENEMIES = 14;
 circle enemies[MAX_ENEMIES];
@@ -103,7 +106,7 @@ void init_enemies() {
 }
 
 void circle_powerup(circle* c, circle* p){
-    c->radius += p->radius / 5;
+    c->radius += p->radius / 4;
 }
 
 void circle_disappear(circle* c){
@@ -122,8 +125,8 @@ int main(){
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
     srand(time(NULL));
-
-    circle_init(&player, screenWidth / 2, screenHeight / 2, 0, 0, 15, RED);
+    player_init();
+    
     init_enemies();
     
     SetTargetFPS(60);
@@ -137,14 +140,22 @@ int main(){
             start = true;
             heratime = GetTime();
         }
+        if (gameclear && IsKeyPressed(KEY_SPACE)){
+            gameclear = false;
+            player_init();
+            init_enemies();
+            start = true;
+            heratime = GetTime();
+        }
         BeginDrawing();
             ClearBackground(RAYWHITE);
 
             circle_draw(&player);
             if (gameclear){
-                DrawText("Game Clear", 250, 200, 50, BLACK);
-                DrawText("Congratulations!", 250, 250, 50, BLACK);
-                DrawText(TextFormat("Clear Time: %d seconds", cleartime), 250, 300, 50, BLACK);
+                DrawText("Game Clear", 250, 200, 50, RED);
+                DrawText("Congratulations!", 250, 250, 50, BLUE);
+                DrawText(TextFormat("Clear Time: %d seconds", cleartime), 250, 300, 50, GREEN);
+                DrawText("Press SPACE to restart", 250, 350, 50, BLACK);
             }else
             if (start){
                 int i = -1;
@@ -156,6 +167,7 @@ int main(){
                     if (circle_col(&player, &enemies[i])){
                         if (player.radius < enemies[i].radius){
                             start = false;
+                            player_init();
                         }else{
                             circle_disappear(&enemies[i]);
                             circle_powerup(&player, &enemies[i]);
