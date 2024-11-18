@@ -63,7 +63,7 @@ bool circle_col(circle* c1, circle* c2){
 
 circle player;
 
-const int MAX_ENEMIES = 10;
+const int MAX_ENEMIES = 14;
 circle enemies[MAX_ENEMIES];
 void init_enemies() {
     int i = -1;
@@ -89,14 +89,14 @@ void init_enemies() {
         }
 
         int s = GetRandomValue(1, 3);
-        int r = GetRandomValue(5, 30);
+        int r = GetRandomValue(3, 30);
 
         circle_init(&enemies[i], x, y, GetRandomValue(-5, 5), GetRandomValue(-5, 5), s, r, BLUE);
     }
 }
 
 void circle_powerup(circle* c, circle* p){
-    c->radius += p->radius / 4;
+    c->radius += p->radius / 5;
 }
 
 void circle_disappear(circle* c){
