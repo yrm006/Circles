@@ -28,7 +28,7 @@ void circle_init(circle* c, int x, int y, int xv, int yv,int radius, Color color
     c->radius = radius;
     c->color = color;
 
-    printf("circle x: %d y: %d xv: %d yv: %d speed: %d radius: %d\n", c->x, c->y, c->xv, c->yv, c->speed, c->radius);
+    printf("circle x: %d y: %d xv: %d yv: %d radius: %d\n", c->x, c->y, c->xv, c->yv, c->radius);
 }
 void circle_draw(circle* c){
     DrawCircle(c->x, c->y, c->radius, c->color);
@@ -79,7 +79,7 @@ void init_enemies() {
     {
         int i = MAX_ENEMIES;
         while(--i >= MAX_ENEMIES / 3){
-            rs[i] = GetRandomValue(5, 15);
+            rs[i] = GetRandomValue(7, 15);
         }
         while(--i >= 0){
             rs[i] = GetRandomValue(15, 30);
@@ -192,7 +192,7 @@ int main(){
                         count++;
                     }
                 }
-                if (count == MAX_ENEMIES){
+                if (count == MAX_ENEMIES - 1){
                     start = false;
                     gameclear = true;
                     cleartime = GetTime() - heratime;
