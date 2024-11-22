@@ -77,7 +77,7 @@ int rs[MAX_ENEMIES];
 
 void init_enemies() {
     {
-        int i = MAX_ENEMIES;
+        int i = MAX_ENEMIES + 1;
         while(--i >= MAX_ENEMIES / 3){
             rs[i] = GetRandomValue(7, 15);
         }
@@ -188,11 +188,11 @@ int main(){
                         }
                     }
 
-                    if (enemies[i].x == -100 && enemies[i].y == -100){
+                    if (enemies[i].x < 0 || enemies[i].x > screenWidth || enemies[i].y < 0 || enemies[i].y > screenHeight){
                         count++;
                     }
                 }
-                if (count == MAX_ENEMIES - 1){
+                if (count == MAX_ENEMIES){
                     start = false;
                     gameclear = true;
                     cleartime = GetTime() - heratime;
