@@ -1,3 +1,8 @@
+//--- for mac
+//% cc Circles.c libraylib.a -framework IOKit -framework Cocoa
+//--- for wsl
+// 1. download the raylib.h and libraylib.a for mingw from raylib.com.
+// 2. build a.exe by mingw.
 #include<raylib.h>
 #include<stdio.h>
 #include<stdlib.h>
