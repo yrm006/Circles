@@ -1,9 +1,11 @@
 //--- for mac
 //% cc Circles.c libraylib.a -framework IOKit -framework Cocoa
+//--- for web
+//% emcc Circles.c -Wall -std=c99 -DPLATFORM_WEB -D_DEFAULT_SOURCE -Wno-missing-braces -Wunused-result -L. -s USE_GLFW=3 -s ASYNCIFY -s EXPORTED_RUNTIME_METHODS=ccall -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 --shell-file ./libraylib.shell.html ./libraylib.wasm.a -o web/index.html
 //--- for wsl
 // 1. download the raylib.h and libraylib.a for mingw from raylib.com.
 // 2. build a.exe by mingw.
-#include<raylib.h>
+#include"raylib.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
